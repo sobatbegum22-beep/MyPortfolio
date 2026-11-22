@@ -1,3 +1,6 @@
+import ContactList from "./pages/ContactList";
+import Signup from "./pages/Signup";
+import Signin from "./pages/Signin";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 
@@ -15,6 +18,9 @@ function App() {
 
             <main>
                 <Routes>
+                    <Route path="/contact-list" element={<ContactList />} />
+                    <Route path="/signup" element={<Signup />} />
+                    <Route path="/signin" element={<Signin />} />
                     <Route path="/" element={<Home />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/projects" element={<Projects />} />

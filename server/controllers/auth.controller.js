@@ -13,11 +13,15 @@ const signin = async (req, res) => {
         if (!user.authenticate(req.body.password)) {
             return res.status(401).json({ error: "Email and password don't match." })
         }
-        const token = jwt.sign({ _id: user._id }, config.jwtSecret, { expiresIn: '1d' })
+        const token = jwt.sign(
+            { _id: user._id, role: user.role },
+            config.jwtSecret,
+            { expiresIn: '1d' }
+        )
         res.cookie('t', token, { maxAge: 24 * 60 * 60 * 1000 })
         return res.json({
             token,
-            user: { _id: user._id, name: user.name, email: user.email }
+            user: { _id: user._id, name: user.name, email: user.email, role: user.role }
         })
     } catch (err) {
         return res.status(401).json({ error: 'Could not sign in' })
@@ -30,14 +34,14 @@ const signout = (req, res) => {
     return res.status(200).json({ message: 'signed out' })
 }
 
-// Middleware: the request must carry a valid token (Authorization: Bearer <token>)
+// Must send: Authorization: Bearer <token>
 const requireSignin = expressjwt({
     secret: config.jwtSecret,
     algorithms: ['HS256'],
     requestProperty: 'auth'
 })
 
-// Middleware: signed-in user may only change their own account
+// A signed-in user may only change their own account
 const hasAuthorization = (req, res, next) => {
     const authorized = req.profile && req.auth && String(req.profile._id) === String(req.auth._id)
     if (!authorized) {
@@ -46,4 +50,12 @@ const hasAuthorization = (req, res, next) => {
     next()
 }
 
-export default { signin, signout, requireSignin, hasAuthorization }
+// Only admins may continue (use AFTER requireSignin)
+const isAdmin = (req, res, next) => {
+    if (req.auth && req.auth.role === 'admin') {
+        return next()
+    }
+    return res.status(403).json({ error: 'Admin access required' })
+}
+
+export default { signin, signout, requireSignin, hasAuthorization, isAdmin }

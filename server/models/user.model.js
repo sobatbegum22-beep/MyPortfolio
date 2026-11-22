@@ -26,7 +26,12 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: 'Password is required'
   },
-  salt: String
+    salt: String,
+  role: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user'
+  }
 })
 
 // The virtual "password" field: hashed before it is stored

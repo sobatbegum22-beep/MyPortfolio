@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { createItem } from "../api/api";
 
 function Contact() {
   const navigate = useNavigate();
+  const [error, setError] = useState("");
 
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    firstname: "",
+    lastname: "",
     phone: "",
     email: "",
     message: ""
@@ -14,24 +16,27 @@ function Contact() {
 
   function handleChange(event) {
     const { name, value } = event.target;
-
-    setFormData({
-      ...formData,
-      [name]: value
-    });
+    setFormData({ ...formData, [name]: value });
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
-
-    alert("Thank you for contacting me!");
-
-    navigate("/");
+    setError("");
+    try {
+      const data = await createItem("contacts", formData);
+      if (data.error) {
+        setError(data.error);
+      } else {
+        alert("Thank you for contacting me!");
+        navigate("/");
+      }
+    } catch (err) {
+      setError("Could not reach the server");
+    }
   }
 
   return (
     <div className="contact-container">
-
       <h1>Contact Me</h1>
 
       <p>
@@ -40,123 +45,52 @@ function Contact() {
       </p>
 
       <div className="contact-info">
-
         <h2>Contact Information</h2>
-
-        <p>
-          <strong>Phone:</strong> +1(437)-267-0852
-        </p>
-
-        <p>
-          <strong>Email:</strong> Sobatbegum22@gmail.com
-        </p>
-
-        <p>
-          <strong>linkedIn:</strong> www.linkedin.com/in/sobat-begum
-        </p>
-
-        <p>
-          <strong>Location:</strong> Toronto, Ontario, Canada
-        </p>
-
+        <p><strong>Phone:</strong> +1(437)-267-0852</p>
+        <p><strong>Email:</strong> Sobatbegum22@gmail.com</p>
+        <p><strong>linkedIn:</strong> www.linkedin.com/in/sobat-begum</p>
+        <p><strong>Location:</strong> Toronto, Ontario, Canada</p>
       </div>
 
       <div className="contact-form">
-
         <h2>Send Me a Message</h2>
 
         <form onSubmit={handleSubmit}>
-
-          {/* First Name */}
           <div className="form-group">
-            <label htmlFor="firstName">
-              First Name
-            </label>
-
-            <input
-              type="text"
-              id="firstName"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleChange}
-              required
-            />
+            <label htmlFor="firstname">First Name</label>
+            <input type="text" id="firstname" name="firstname"
+              value={formData.firstname} onChange={handleChange} required />
           </div>
 
-          {/* Last Name */}
           <div className="form-group">
-            <label htmlFor="lastName">
-              Last Name
-            </label>
-
-            <input
-              type="text"
-              id="lastName"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
-              required
-            />
+            <label htmlFor="lastname">Last Name</label>
+            <input type="text" id="lastname" name="lastname"
+              value={formData.lastname} onChange={handleChange} required />
           </div>
 
-          {/* Contact Number */}
           <div className="form-group">
-            <label htmlFor="phone">
-              Contact Number
-            </label>
-
-            <input
-              type="tel"
-              id="phone"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              required
-            />
+            <label htmlFor="phone">Contact Number</label>
+            <input type="tel" id="phone" name="phone"
+              value={formData.phone} onChange={handleChange} required />
           </div>
 
-          {/* Email */}
           <div className="form-group">
-            <label htmlFor="email">
-              Email Address
-            </label>
-
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
+            <label htmlFor="email">Email Address</label>
+            <input type="email" id="email" name="email"
+              value={formData.email} onChange={handleChange} required />
           </div>
 
-          {/* Message */}
           <div className="form-group">
-            <label htmlFor="message">
-              Message
-            </label>
-
-            <textarea
-              id="message"
-              name="message"
-              value={formData.message}
-              onChange={handleChange}
-              required
-            ></textarea>
+            <label htmlFor="message">Message</label>
+            <textarea id="message" name="message"
+              value={formData.message} onChange={handleChange} required></textarea>
           </div>
 
-          <button
-            type="submit"
-            className="submit-button"
-          >
-            Send Message
-          </button>
+          {error && <p style={{ color: "red" }}>{error}</p>}
 
+          <button type="submit" className="submit-button">Send Message</button>
         </form>
-
       </div>
-
     </div>
   );
 }

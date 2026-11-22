@@ -8,6 +8,7 @@ import contactRoutes from './routes/contact.routes.js'
 import projectRoutes from './routes/project.routes.js'
 import qualificationRoutes from './routes/qualification.routes.js'
 import authRoutes from './routes/auth.routes.js'
+import serviceRoutes from './routes/service.routes.js'
 
 const app = express()
 
@@ -25,6 +26,7 @@ app.use('/', contactRoutes)
 app.use('/', projectRoutes)
 app.use('/', qualificationRoutes)
 app.use('/', authRoutes)
+app.use('/', serviceRoutes)
 
 // Error handler (must come AFTER the routes)
 app.use((err, req, res, next) => {

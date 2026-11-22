@@ -2,8 +2,9 @@ import User from '../models/user.model.js'
 import extend from 'lodash/extend.js'
 import errorHandler from './error.controller.js'
 const create = async (req, res) => { 
-const user = new User(req.body) 
-try {
+  const { name, email, password } = req.body
+  const user = new User({ name, email, password })
+  try {
 await user.save()
 return res.status(200).json({ 
 message: "Successfully signed up!"
@@ -47,6 +48,7 @@ return res.json(req.profile)
 const update = async (req, res) => { 
 try {
 let user = req.profile
+delete req.body.role
 user = extend(user, req.body) 
 user.updated = Date.now() 
 await user.save()
